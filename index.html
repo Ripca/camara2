@@ -27,6 +27,8 @@
             #camaraContainer {
                 position: relative;
                 overflow: hidden;
+                width: 284.409px;
+                height: 163.228px; /* Tamaño de la caja */
             }
 
             #camara {
@@ -147,8 +149,8 @@
                     camara.srcObject = stream;
 
                     camara.onloadedmetadata = function () {
-                        camara.width = camaraContainer.offsetWidth;
-                        camara.height = camaraContainer.offsetHeight;
+                        camara.width = width; // Ajusta el tamaño de la cámara al tamaño de la caja
+                        camara.height = height; // Ajusta el tamaño de la cámara al tamaño de la caja
                     };
                 } catch (error) {
                     console.error("Error al acceder a la cámara:", error);
