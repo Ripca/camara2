@@ -27,26 +27,23 @@
             #camaraContainer {
                 position: relative;
                 overflow: hidden;
+                /* Elimina el tamaño fijo */
             }
 
             #camara {
                 width: 100%;
                 height: 100%;
-                object-fit: cover;
             }
         </style>
     </head>
     <body>
         <div id="modalContainer">
-            <div id="modalContent" style="display: flex; flex-direction: column">
+            <div id="modalContent">
                 <div id="camaraContainer">
                     <video id="camara" autoplay></video>
                 </div>
-
-                <div style="margin: 30px">
-                    <button id="foto1" onclick="tomarFoto()">Tomar Foto</button>
-                    <button id="foto2" onclick="tomarFoto2()">Tomar Foto2</button>
-                </div>
+                <button id="foto1" onclick="tomarFoto()">Tomar Foto</button>
+                <button id="foto2" onclick="tomarFoto2()">Tomar Foto2</button>
             </div>
         </div>
 
@@ -119,37 +116,21 @@
         <script>
             async function abrirModal() {
                 const modal = document.getElementById("modalContainer");
-                const isMobile =
-                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                        navigator.userAgent
-                    );
-
                 modal.style.display = "block";
 
                 const camara = document.getElementById("camara");
-                const caja1 = document.getElementById("caja1");
-                const width = caja1.offsetWidth;
-                const height = caja1.offsetHeight;
+                const caja1 = document.getElementById("caja1"); // Obtén el contenedor de la caja
+                const width = caja1.offsetWidth; // Obtén el ancho de la caja
+                const height = caja1.offsetHeight; // Obtén la altura de la caja
 
                 try {
-                    let constraints = {
+                    const stream = await navigator.mediaDevices.getUserMedia({
                         video: {
-                            width: width,
-                            height: height,
+                            width: width, // Establece el ancho de la cámara
+                            height: height, // Establece la altura de la cámara
                         },
-                    };
-
-                    if (isMobile) {
-                        constraints.video.facingMode = { exact: "environment" };
-                    }
-
-                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    });
                     camara.srcObject = stream;
-
-                    camara.onloadedmetadata = function () {
-                        camara.width = camaraContainer.offsetWidth;
-                        camara.height = camaraContainer.offsetHeight;
-                    };
                 } catch (error) {
                     console.error("Error al acceder a la cámara:", error);
                 }
