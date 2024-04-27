@@ -136,8 +136,8 @@
                 try {
                     let constraints = {
                         video: {
-                            width: width,
-                            height: height,
+                            width: { ideal: width },
+                            height: { ideal: height },
                         },
                     };
 
@@ -149,8 +149,15 @@
                     camara.srcObject = stream;
 
                     camara.onloadedmetadata = function () {
-                        camara.width = width; // Ajusta el tamaño de la cámara al tamaño de la caja
-                        camara.height = height; // Ajusta el tamaño de la cámara al tamaño de la caja
+                        // Ajusta el tamaño de la cámara al tamaño de la caja
+                        const aspectRatio = camara.videoWidth / camara.videoHeight;
+                        if (aspectRatio > 1) {
+                            camara.width = width;
+                            camara.height = width / aspectRatio;
+                        } else {
+                            camara.height = height;
+                            camara.width = height * aspectRatio;
+                        }
                     };
                 } catch (error) {
                     console.error("Error al acceder a la cámara:", error);
