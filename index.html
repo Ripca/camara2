@@ -28,11 +28,14 @@
                 position: relative;
                 overflow: hidden;
                 /* Elimina el tamaño fijo */
+                width: 284.409px; /* Ancho fijo, puedes ajustarlo según tus necesidades */
+                height: 163.228px;
             }
 
             #camara {
                 width: 100%;
                 height: 100%;
+                object-fit: cover; /* Ajusta el tamaño del video para llenar el contenedor sin distorsión */
             }
         </style>
     </head>
@@ -125,12 +128,14 @@
 
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({
-                        video: {
-                            width: width, // Establece el ancho de la cámara
-                            height: height, // Establece la altura de la cámara
-                        },
+                        video: true,
                     });
                     camara.srcObject = stream;
+                    // Ajusta el tamaño de la cámara para que coincida con el contenedor
+                    camara.onloadedmetadata = function () {
+                        camara.width = camaraContainer.offsetWidth;
+                        camara.height = camaraContainer.offsetHeight;
+                    };
                 } catch (error) {
                     console.error("Error al acceder a la cámara:", error);
                 }
