@@ -131,7 +131,11 @@
 
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({
-                        video: true,
+                        video: {
+                            width: width, // Establece el ancho de la cámara
+                            height: height, // Establece la altura de la cámara
+                            facingMode: { exact: "environment" }, // Acceder a la cámara trasera
+                        },
                     });
                     camara.srcObject = stream;
                     // Ajusta el tamaño de la cámara para que coincida con el contenedor
