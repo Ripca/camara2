@@ -41,12 +41,15 @@
     </head>
     <body>
         <div id="modalContainer">
-            <div id="modalContent">
+            <div id="modalContent" style="display: flex; flex-direction: column">
                 <div id="camaraContainer">
                     <video id="camara" autoplay></video>
                 </div>
-                <button id="foto1" onclick="tomarFoto()">Tomar Foto</button>
-                <button id="foto2" onclick="tomarFoto2()">Tomar Foto2</button>
+
+                <div style="margin: 30px">
+                    <button id="foto1" onclick="tomarFoto()">Tomar Foto</button>
+                    <button id="foto2" onclick="tomarFoto2()">Tomar Foto2</button>
+                </div>
             </div>
         </div>
 
