@@ -122,7 +122,10 @@
         <script>
             async function abrirModal() {
                 const modal = document.getElementById("modalContainer");
-                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                const isMobile =
+                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                        navigator.userAgent
+                    );
 
                 if (!isMobile) {
                     alert("Por favor, utilice su celular para tomar la fotografía.");
