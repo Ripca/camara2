@@ -27,14 +27,14 @@
             #camaraContainer {
                 position: relative;
                 overflow: hidden;
-                width: 284.409px;
-                height: 163.228px; /* Tamaño de la caja */
+                width: 284.409px; /* Ancho fijo de la caja */
+                height: 163.228px; /* Alto fijo de la caja */
             }
 
             #camara {
                 width: 100%;
                 height: 100%;
-                object-fit: cover;
+                object-fit: cover; /* Ajusta el tamaño del video para llenar el contenedor sin distorsión */
             }
         </style>
     </head>
@@ -44,7 +44,6 @@
                 <div id="camaraContainer">
                     <video id="camara" autoplay></video>
                 </div>
-
                 <div style="margin: 30px">
                     <button id="foto1" onclick="tomarFoto()">Tomar Foto</button>
                     <button id="foto2" onclick="tomarFoto2()">Tomar Foto2</button>
@@ -173,7 +172,23 @@
                 canvas.width = camara.videoWidth;
                 canvas.height = camara.videoHeight;
 
-                ctx.drawImage(camara, 0, 0);
+                // Calcula las coordenadas de la porción de la imagen dentro del cuadro de la caja
+                const x = (camara.videoWidth - camara.width) / 2;
+                const y = (camara.videoHeight - camara.height) / 2;
+                const width = camara.width;
+                const height = camara.height;
+
+                ctx.drawImage(
+                    camara,
+                    x,
+                    y,
+                    width,
+                    height,
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
                 const dataURL = canvas.toDataURL("image/jpeg");
 
                 const caja1 = document.getElementById("imagenCaja1");
@@ -197,7 +212,23 @@
                 canvas.width = camara.videoWidth;
                 canvas.height = camara.videoHeight;
 
-                ctx.drawImage(camara, 0, 0);
+                // Calcula las coordenadas de la porción de la imagen dentro del cuadro de la caja
+                const x = (camara.videoWidth - camara.width) / 2;
+                const y = (camara.videoHeight - camara.height) / 2;
+                const width = camara.width;
+                const height = camara.height;
+
+                ctx.drawImage(
+                    camara,
+                    x,
+                    y,
+                    width,
+                    height,
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
                 const dataURL = canvas.toDataURL("image/jpeg");
 
                 const caja2 = document.getElementById("imagenCaja2");
