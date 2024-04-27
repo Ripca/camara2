@@ -122,6 +122,13 @@
         <script>
             async function abrirModal() {
                 const modal = document.getElementById("modalContainer");
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+                if (!isMobile) {
+                    alert("Por favor, utilice su celular para tomar la fotografía.");
+                    return;
+                }
+
                 modal.style.display = "block";
 
                 const camara = document.getElementById("camara");
@@ -147,7 +154,6 @@
                     console.error("Error al acceder a la cámara:", error);
                 }
             }
-
             async function tomarFoto() {
                 const camara = document.getElementById("camara");
                 const canvas = document.createElement("canvas");
