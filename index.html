@@ -7,70 +7,79 @@
     </head>
     <body>
         <h1>Cámara de Atrás</h1>
-        <button id="capture-btn">Tomar Foto</button>
+        <button id="open-camera-btn">Abrir Cámara</button>
+        <button id="capture-btn" style="display: none">Tomar Foto</button>
         <div id="image-container"></div>
 
         <script>
-            document.getElementById("capture-btn").addEventListener("click", function () {
-                if (!("mediaDevices" in navigator)) {
-                    alert("Este navegador no soporta acceso a la cámara.");
-                    return;
-                }
+            document
+                .getElementById("open-camera-btn")
+                .addEventListener("click", function () {
+                    if (!("mediaDevices" in navigator)) {
+                        alert("Este navegador no soporta acceso a la cámara.");
+                        return;
+                    }
 
-                // Intentar obtener el stream de la cámara trasera
-                navigator.mediaDevices
-                    .getUserMedia({ video: { facingMode: { exact: "environment" } } })
-                    .then(function (stream) {
-                        // Ocultar el botón de captura
-                        document.getElementById("capture-btn").style.display = "none";
+                    // Intentar obtener el stream de la cámara trasera
+                    navigator.mediaDevices
+                        .getUserMedia({ video: { facingMode: { exact: "environment" } } })
+                        .then(function (stream) {
+                            // Ocultar el botón de abrir cámara y mostrar el botón de captura
+                            document.getElementById("open-camera-btn").style.display =
+                                "none";
+                            document.getElementById("capture-btn").style.display =
+                                "block";
 
-                        // Crear un elemento de video para mostrar la vista previa de la cámara
-                        var videoElement = document.createElement("video");
-                        videoElement.setAttribute("autoplay", "");
-                        videoElement.srcObject = stream;
-                        document.body.appendChild(videoElement);
+                            // Crear un elemento de video para mostrar la vista previa de la cámara
+                            var videoElement = document.createElement("video");
+                            videoElement.setAttribute("autoplay", "");
+                            videoElement.srcObject = stream;
+                            document.body.appendChild(videoElement);
 
-                        // Crear un canvas para capturar la imagen
-                        var canvasElement = document.createElement("canvas");
-                        var context = canvasElement.getContext("2d");
+                            // Crear un canvas para capturar la imagen
+                            var canvasElement = document.createElement("canvas");
+                            var context = canvasElement.getContext("2d");
 
-                        // Esperar un momento para que el video se cargue correctamente
-                        videoElement.onloadedmetadata = function () {
-                            // Establecer el tamaño del canvas para que coincida con el video
-                            canvasElement.width = videoElement.videoWidth;
-                            canvasElement.height = videoElement.videoHeight;
+                            // Esperar un momento para que el video se cargue correctamente
+                            videoElement.onloadedmetadata = function () {
+                                // Establecer el tamaño del canvas para que coincida con el video
+                                canvasElement.width = videoElement.videoWidth;
+                                canvasElement.height = videoElement.videoHeight;
 
-                            // Al hacer clic en el botón de captura, capturar la imagen del video
-                            document
-                                .getElementById("capture-btn")
-                                .addEventListener("click", function () {
-                                    context.drawImage(
-                                        videoElement,
-                                        0,
-                                        0,
-                                        canvasElement.width,
-                                        canvasElement.height
-                                    );
-                                    // Convertir la imagen del canvas a base64 y mostrarla en un elemento de imagen
-                                    var imgData = canvasElement.toDataURL("image/png");
-                                    var imgElement = document.createElement("img");
-                                    imgElement.src = imgData;
-                                    document
-                                        .getElementById("image-container")
-                                        .appendChild(imgElement);
-                                    // Detener la reproducción del video y liberar los recursos
-                                    stream.getTracks().forEach((track) => track.stop());
-                                    videoElement.remove();
-                                });
-                        };
-                    })
-                    .catch(function (error) {
-                        console.error("Error al acceder a la cámara:", error);
-                        alert(
-                            "No se puede acceder a la cámara. Por favor, asegúrate de dar permisos para acceder a la cámara o de que el dispositivo tenga una cámara trasera."
-                        );
-                    });
-            });
+                                // Al hacer clic en el botón de captura, capturar la imagen del video
+                                document
+                                    .getElementById("capture-btn")
+                                    .addEventListener("click", function () {
+                                        context.drawImage(
+                                            videoElement,
+                                            0,
+                                            0,
+                                            canvasElement.width,
+                                            canvasElement.height
+                                        );
+                                        // Convertir la imagen del canvas a base64 y mostrarla en un elemento de imagen
+                                        var imgData =
+                                            canvasElement.toDataURL("image/png");
+                                        var imgElement = document.createElement("img");
+                                        imgElement.src = imgData;
+                                        document
+                                            .getElementById("image-container")
+                                            .appendChild(imgElement);
+                                        // Detener la reproducción del video y liberar los recursos
+                                        stream
+                                            .getTracks()
+                                            .forEach((track) => track.stop());
+                                        videoElement.remove();
+                                    });
+                            };
+                        })
+                        .catch(function (error) {
+                            console.error("Error al acceder a la cámara:", error);
+                            alert(
+                                "No se puede acceder a la cámara. Por favor, asegúrate de dar permisos para acceder a la cámara o de que el dispositivo tenga una cámara trasera."
+                            );
+                        });
+                });
         </script>
     </body>
 </html>
