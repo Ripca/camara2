@@ -130,6 +130,7 @@
         </div>
 
         <script>
+            alert("hola11");
             async function abrirModal() {
                 const modal = document.getElementById("modalContainer");
                 const isMobile =
@@ -181,26 +182,28 @@
                 const ctx = canvas.getContext("2d");
 
                 // Establece el tamaño del canvas para que coincida con el tamaño de la caja
-                canvas.width = 284.409; // Ancho fijo de la caja
-                canvas.height = 163.228; // Alto fijo de la caja
+                const width = 284.409;
+                const height = 163.228;
+                canvas.width = width;
+                canvas.height = height;
 
                 // Calcula las coordenadas de la porción de la imagen dentro del cuadro de la caja
-                const width = camara.videoWidth;
-                const height = camara.videoHeight;
-                const x = (width - camara.width) / 2;
-                const y = (height - camara.height) / 2;
+                const aspectRatio = camara.videoWidth / camara.videoHeight;
+                let sx, sy, sWidth, sHeight;
 
-                ctx.drawImage(
-                    camara,
-                    x,
-                    y,
-                    camara.width,
-                    camara.height,
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
+                if (aspectRatio > 1) {
+                    sWidth = camara.videoHeight * aspectRatio;
+                    sHeight = camara.videoHeight;
+                    sx = (camara.videoWidth - sWidth) / 2;
+                    sy = 0;
+                } else {
+                    sWidth = camara.videoWidth;
+                    sHeight = camara.videoWidth / aspectRatio;
+                    sx = 0;
+                    sy = (camara.videoHeight - sHeight) / 2;
+                }
+
+                ctx.drawImage(camara, sx, sy, sWidth, sHeight, 0, 0, width, height);
                 const dataURL = canvas.toDataURL("image/jpeg");
 
                 const caja1 = document.getElementById("imagenCaja1");
@@ -220,26 +223,28 @@
                 const ctx = canvas.getContext("2d");
 
                 // Establece el tamaño del canvas para que coincida con el tamaño de la caja
-                canvas.width = 284.409; // Ancho fijo de la caja
-                canvas.height = 163.228; // Alto fijo de la caja
+                const width = 284.409;
+                const height = 163.228;
+                canvas.width = width;
+                canvas.height = height;
 
                 // Calcula las coordenadas de la porción de la imagen dentro del cuadro de la caja
-                const width = camara.videoWidth;
-                const height = camara.videoHeight;
-                const x = (width - camara.width) / 2;
-                const y = (height - camara.height) / 2;
+                const aspectRatio = camara.videoWidth / camara.videoHeight;
+                let sx, sy, sWidth, sHeight;
 
-                ctx.drawImage(
-                    camara,
-                    x,
-                    y,
-                    camara.width,
-                    camara.height,
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
+                if (aspectRatio > 1) {
+                    sWidth = camara.videoHeight * aspectRatio;
+                    sHeight = camara.videoHeight;
+                    sx = (camara.videoWidth - sWidth) / 2;
+                    sy = 0;
+                } else {
+                    sWidth = camara.videoWidth;
+                    sHeight = camara.videoWidth / aspectRatio;
+                    sx = 0;
+                    sy = (camara.videoHeight - sHeight) / 2;
+                }
+
+                ctx.drawImage(camara, sx, sy, sWidth, sHeight, 0, 0, width, height);
                 const dataURL = canvas.toDataURL("image/jpeg");
 
                 const caja2 = document.getElementById("imagenCaja2");
