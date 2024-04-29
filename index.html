@@ -1,262 +1,76 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Página de Ejemplo</title>
-        <style>
-            #modalContainer {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 1000;
-            }
-
-            #modalContent {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 100%;
-                height: 100%;
-            }
-
-            #camaraContainer {
-                position: relative;
-                overflow: hidden;
-                width: 284.409px; /* Ancho fijo de la caja */
-                height: 163.228px; /* Alto fijo de la caja */
-            }
-
-            #camara {
-                width: 100%;
-                height: 100%;
-                object-fit: cover; /* Ajusta el tamaño del video para llenar el contenedor sin distorsión */
-            }
-        </style>
+        <title>Cámara de Atrás</title>
     </head>
     <body>
-        <div id="modalContainer">
-            <div id="modalContent" style="display: flex; flex-direction: column">
-                <div id="camaraContainer">
-                    <video id="camara" autoplay></video>
-                </div>
-                <div style="margin: 30px">
-                    <button id="foto1" onclick="tomarFoto()">Tomar Foto</button>
-                    <button id="foto2" onclick="tomarFoto2()">Tomar Foto2</button>
-                </div>
-            </div>
-        </div>
-
-        <div
-            class="form-group-sm col-md-12"
-            style="display: flex; justify-content: space-around; flex-wrap: wrap"
-        >
-            <div
-                onclick="abrirModal()"
-                id="caja1"
-                style="
-                    position: relative;
-                    display: flex;
-                    flex-direction: column;
-                    border: dashed 3px red;
-                    margin: 10px;
-                    width: 284.409px;
-                    height: 163.228px;
-                "
-            >
-                <span
-                    style="
-                        position: absolute;
-                        top: -20px;
-                        left: 0;
-                        right: 0;
-                        text-align: center;
-                    "
-                    >DPI reverso</span
-                >
-                <img
-                    id="imagenCaja1"
-                    src="card.svg"
-                    alt="DPI reverso"
-                    style="
-                        width: 284.409px;
-                        height: 163.228px;
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                    "
-                />
-            </div>
-            <div
-                onclick="abrirModal()"
-                id="caja2"
-                style="
-                    position: relative;
-                    display: flex;
-                    flex-direction: column;
-                    border: dashed 3px red;
-                    margin: 10px;
-                    width: 284.409px;
-                    height: 163.228px;
-                "
-            >
-                <span
-                    style="
-                        position: absolute;
-                        top: -20px;
-                        left: 0;
-                        right: 0;
-                        text-align: center;
-                    "
-                    >DPI reverso</span
-                >
-                <img
-                    id="imagenCaja2"
-                    src="card.svg"
-                    alt="DPI reverso"
-                    style="
-                        width: 284.409px;
-                        height: 163.228px;
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                    "
-                />
-            </div>
-        </div>
+        <h1>Cámara de Atrás</h1>
+        <button id="capture-btn">Tomar Foto</button>
+        <div id="image-container"></div>
 
         <script>
-            alert("hola11");
-            async function abrirModal() {
-                const modal = document.getElementById("modalContainer");
-                const isMobile =
-                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                        navigator.userAgent
-                    );
-
-                modal.style.display = "block";
-
-                const camara = document.getElementById("camara");
-                const caja1 = document.getElementById("caja1");
-                const width = caja1.offsetWidth;
-                const height = caja1.offsetHeight;
-
-                try {
-                    let constraints = {
-                        video: {
-                            width: { ideal: width },
-                            height: { ideal: height },
-                        },
-                    };
-
-                    if (isMobile) {
-                        constraints.video.facingMode = { exact: "environment" };
-                    }
-
-                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                    camara.srcObject = stream;
-
-                    camara.onloadedmetadata = function () {
-                        // Ajusta el tamaño de la cámara al tamaño de la caja
-                        const aspectRatio = camara.videoWidth / camara.videoHeight;
-                        if (aspectRatio > 1) {
-                            camara.width = width;
-                            camara.height = width / aspectRatio;
-                        } else {
-                            camara.height = height;
-                            camara.width = height * aspectRatio;
-                        }
-                    };
-                } catch (error) {
-                    console.error("Error al acceder a la cámara:", error);
-                }
-            }
-
-            async function tomarFoto() {
-                const camara = document.getElementById("camara");
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-
-                // Establece el tamaño del canvas para que coincida con el tamaño de la caja
-                const width = 284.409;
-                const height = 163.228;
-                canvas.width = width;
-                canvas.height = height;
-
-                // Calcula las coordenadas de la porción de la imagen dentro del cuadro de la caja
-                const aspectRatio = camara.videoWidth / camara.videoHeight;
-                let sx, sy, sWidth, sHeight;
-
-                if (aspectRatio > 1) {
-                    sWidth = camara.videoHeight * aspectRatio;
-                    sHeight = camara.videoHeight;
-                    sx = (camara.videoWidth - sWidth) / 2;
-                    sy = 0;
-                } else {
-                    sWidth = camara.videoWidth;
-                    sHeight = camara.videoWidth / aspectRatio;
-                    sx = 0;
-                    sy = (camara.videoHeight - sHeight) / 2;
+            document.getElementById("capture-btn").addEventListener("click", function () {
+                if (!("mediaDevices" in navigator)) {
+                    alert("Este navegador no soporta acceso a la cámara.");
+                    return;
                 }
 
-                ctx.drawImage(camara, sx, sy, sWidth, sHeight, 0, 0, width, height);
-                const dataURL = canvas.toDataURL("image/jpeg");
+                // Intentar obtener el stream de la cámara trasera
+                navigator.mediaDevices
+                    .getUserMedia({ video: { facingMode: { exact: "environment" } } })
+                    .then(function (stream) {
+                        // Ocultar el botón de captura
+                        document.getElementById("capture-btn").style.display = "none";
 
-                const caja1 = document.getElementById("imagenCaja1");
-                caja1.src = dataURL;
+                        // Crear un elemento de video para mostrar la vista previa de la cámara
+                        var videoElement = document.createElement("video");
+                        videoElement.setAttribute("autoplay", "");
+                        videoElement.srcObject = stream;
+                        document.body.appendChild(videoElement);
 
-                const stream = camara.srcObject;
-                const tracks = stream.getTracks();
-                tracks.forEach((track) => track.stop());
+                        // Crear un canvas para capturar la imagen
+                        var canvasElement = document.createElement("canvas");
+                        var context = canvasElement.getContext("2d");
 
-                const modal = document.getElementById("modalContainer");
-                modal.style.display = "none";
-            }
+                        // Esperar un momento para que el video se cargue correctamente
+                        videoElement.onloadedmetadata = function () {
+                            // Establecer el tamaño del canvas para que coincida con el video
+                            canvasElement.width = videoElement.videoWidth;
+                            canvasElement.height = videoElement.videoHeight;
 
-            async function tomarFoto2() {
-                const camara = document.getElementById("camara");
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-
-                // Establece el tamaño del canvas para que coincida con el tamaño de la caja
-                const width = 284.409;
-                const height = 163.228;
-                canvas.width = width;
-                canvas.height = height;
-
-                // Calcula las coordenadas de la porción de la imagen dentro del cuadro de la caja
-                const aspectRatio = camara.videoWidth / camara.videoHeight;
-                let sx, sy, sWidth, sHeight;
-
-                if (aspectRatio > 1) {
-                    sWidth = camara.videoHeight * aspectRatio;
-                    sHeight = camara.videoHeight;
-                    sx = (camara.videoWidth - sWidth) / 2;
-                    sy = 0;
-                } else {
-                    sWidth = camara.videoWidth;
-                    sHeight = camara.videoWidth / aspectRatio;
-                    sx = 0;
-                    sy = (camara.videoHeight - sHeight) / 2;
-                }
-
-                ctx.drawImage(camara, sx, sy, sWidth, sHeight, 0, 0, width, height);
-                const dataURL = canvas.toDataURL("image/jpeg");
-
-                const caja2 = document.getElementById("imagenCaja2");
-                caja2.src = dataURL;
-
-                const stream = camara.srcObject;
-                const tracks = stream.getTracks();
-                tracks.forEach((track) => track.stop());
-
-                const modal = document.getElementById("modalContainer");
-                modal.style.display = "none";
-            }
+                            // Al hacer clic en el botón de captura, capturar la imagen del video
+                            document
+                                .getElementById("capture-btn")
+                                .addEventListener("click", function () {
+                                    context.drawImage(
+                                        videoElement,
+                                        0,
+                                        0,
+                                        canvasElement.width,
+                                        canvasElement.height
+                                    );
+                                    // Convertir la imagen del canvas a base64 y mostrarla en un elemento de imagen
+                                    var imgData = canvasElement.toDataURL("image/png");
+                                    var imgElement = document.createElement("img");
+                                    imgElement.src = imgData;
+                                    document
+                                        .getElementById("image-container")
+                                        .appendChild(imgElement);
+                                    // Detener la reproducción del video y liberar los recursos
+                                    stream.getTracks().forEach((track) => track.stop());
+                                    videoElement.remove();
+                                });
+                        };
+                    })
+                    .catch(function (error) {
+                        console.error("Error al acceder a la cámara:", error);
+                        alert(
+                            "No se puede acceder a la cámara. Por favor, asegúrate de dar permisos para acceder a la cámara o de que el dispositivo tenga una cámara trasera."
+                        );
+                    });
+            });
         </script>
     </body>
 </html>
