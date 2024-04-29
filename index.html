@@ -82,7 +82,13 @@
                     id="imagenCaja1"
                     src="card.svg"
                     alt="DPI reverso"
-                    style="width: 100%; height: 100%; position: absolute; top: 0; left: 0"
+                    style="
+                        width: 284.409px;
+                        height: 163.228px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    "
                 />
             </div>
             <div
@@ -112,7 +118,13 @@
                     id="imagenCaja2"
                     src="card.svg"
                     alt="DPI reverso"
-                    style="width: 100%; height: 100%; position: absolute; top: 0; left: 0"
+                    style="
+                        width: 284.409px;
+                        height: 163.228px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    "
                 />
             </div>
         </div>
@@ -173,17 +185,17 @@
                 canvas.height = 163.228; // Alto fijo de la caja
 
                 // Calcula las coordenadas de la porción de la imagen dentro del cuadro de la caja
-                const x = (camara.videoWidth - camara.width) / 2;
-                const y = (camara.videoHeight - camara.height) / 2;
-                const width = camara.width;
-                const height = camara.height;
+                const width = camara.videoWidth;
+                const height = camara.videoHeight;
+                const x = (width - camara.width) / 2;
+                const y = (height - camara.height) / 2;
 
                 ctx.drawImage(
                     camara,
                     x,
                     y,
-                    width,
-                    height,
+                    camara.width,
+                    camara.height,
                     0,
                     0,
                     canvas.width,
@@ -192,7 +204,6 @@
                 const dataURL = canvas.toDataURL("image/jpeg");
 
                 const caja1 = document.getElementById("imagenCaja1");
-
                 caja1.src = dataURL;
 
                 const stream = camara.srcObject;
@@ -213,17 +224,17 @@
                 canvas.height = 163.228; // Alto fijo de la caja
 
                 // Calcula las coordenadas de la porción de la imagen dentro del cuadro de la caja
-                const x = (camara.videoWidth - camara.width) / 2;
-                const y = (camara.videoHeight - camara.height) / 2;
-                const width = camara.width;
-                const height = camara.height;
+                const width = camara.videoWidth;
+                const height = camara.videoHeight;
+                const x = (width - camara.width) / 2;
+                const y = (height - camara.height) / 2;
 
                 ctx.drawImage(
                     camara,
                     x,
                     y,
-                    width,
-                    height,
+                    camara.width,
+                    camara.height,
                     0,
                     0,
                     canvas.width,
@@ -232,7 +243,6 @@
                 const dataURL = canvas.toDataURL("image/jpeg");
 
                 const caja2 = document.getElementById("imagenCaja2");
-
                 caja2.src = dataURL;
 
                 const stream = camara.srcObject;
