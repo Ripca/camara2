@@ -51,10 +51,12 @@
                                     .getElementById("capture-btn")
                                     .addEventListener("click", function () {
                                         // Capturar solo el área deseada del elemento de vídeo
+                                        var sx = (videoElement.videoWidth - 250) / 2;
+                                        var sy = (videoElement.videoHeight - 250) / 2;
                                         context.drawImage(
                                             videoElement,
-                                            0,
-                                            0,
+                                            sx,
+                                            sy,
                                             250,
                                             250,
                                             0,
