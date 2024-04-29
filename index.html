@@ -34,28 +34,33 @@
                             var videoElement = document.createElement("video");
                             videoElement.setAttribute("autoplay", "");
                             videoElement.srcObject = stream;
+                            videoElement.width = 250; // Establecer el ancho del elemento de vídeo
+                            videoElement.height = 250; // Establecer la altura del elemento de vídeo
                             document.body.appendChild(videoElement);
 
                             // Crear un canvas para capturar la imagen
                             var canvasElement = document.createElement("canvas");
+                            canvasElement.width = 250; // Establecer el ancho del canvas
+                            canvasElement.height = 250; // Establecer la altura del canvas
                             var context = canvasElement.getContext("2d");
 
                             // Esperar un momento para que el video se cargue correctamente
                             videoElement.onloadedmetadata = function () {
-                                // Establecer el tamaño del canvas para que coincida con el video
-                                canvasElement.width = videoElement.videoWidth;
-                                canvasElement.height = videoElement.videoHeight;
-
                                 // Al hacer clic en el botón de captura, capturar la imagen del video
                                 document
                                     .getElementById("capture-btn")
                                     .addEventListener("click", function () {
+                                        // Capturar solo el área deseada del elemento de vídeo
                                         context.drawImage(
                                             videoElement,
                                             0,
                                             0,
-                                            canvasElement.width,
-                                            canvasElement.height
+                                            250,
+                                            250,
+                                            0,
+                                            0,
+                                            250,
+                                            250
                                         );
                                         // Convertir la imagen del canvas a base64 y mostrarla en un elemento de imagen
                                         var imgData =
