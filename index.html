@@ -10,9 +10,12 @@
         <button id="captureButton">Capturar</button>
         <div
             id="cameraContainer"
-            style="width: 250px; height: 250px; overflow: hidden"
+            style="width: 284.409px; height: 163.228px; overflow: hidden"
         ></div>
-        <img id="capturedImage" style="display: none; width: 250px; height: 250px" />
+        <img
+            id="capturedImage"
+            style="display: none; width: 284.409px; height: 163.228px"
+        />
 
         <script>
             document
@@ -22,8 +25,8 @@
                         const stream = await navigator.mediaDevices.getUserMedia({
                             video: {
                                 facingMode: "environment",
-                                width: { exact: 250 },
-                                height: { exact: 250 },
+                                width: { exact: 284.409 },
+                                height: { exact: 163.228 },
                             },
                         });
                         const video = document.createElement("video");
@@ -32,18 +35,19 @@
                         cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
                         cameraContainer.appendChild(video);
                         video.srcObject = stream;
-                        video.width = 250; // Establece el ancho del video
-                        video.height = 250; // Establece el alto del video
+                        video.width = 284.409; // Establece el ancho del video
+                        video.height = 163.228; // Establece el alto del video
                         await video.play();
 
                         const capturedImage = document.getElementById("capturedImage");
 
                         const captureImage = async () => {
                             const canvas = document.createElement("canvas");
-                            canvas.width = 250;
-                            canvas.height = 250;
+                            canvas.width = 284.409;
+                            canvas.height = 163.228;
                             const context = canvas.getContext("2d");
-                            context.drawImage(video, 0, 0, 250, 250);
+                            //pendiente
+                            context.drawImage(video, 0, 0, 284.409, 163.228);
                             const imageDataURL = canvas.toDataURL("image/png");
                             capturedImage.src = imageDataURL;
                             capturedImage.style.display = "block";
