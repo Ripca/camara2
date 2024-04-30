@@ -10,11 +10,18 @@
                 width: 300px;
                 height: 250px;
                 overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                transform: rotate(90deg); /* Rotar la cámara horizontalmente */
             }
 
             #cameraContainer video {
-                width: 100%;
+                width: auto;
                 height: 100%;
+                transform: rotate(
+                    -90deg
+                ); /* Rotar el video de nuevo a su orientación original */
             }
 
             #capturedImage {
@@ -47,8 +54,8 @@
                         cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
                         cameraContainer.appendChild(video);
                         video.srcObject = stream;
-                        video.width = 300; // Establece el ancho del video
-                        video.height = 250; // Establece el alto del video
+                        video.width = 250; // Establece el ancho del video
+                        video.height = 300; // Establece el alto del video (intercambiado para mantener la orientación correcta)
                         await video.play();
 
                         const capturedImage = document.getElementById("capturedImage");
