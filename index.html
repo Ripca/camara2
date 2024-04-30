@@ -22,8 +22,8 @@
                         const stream = await navigator.mediaDevices.getUserMedia({
                             video: {
                                 facingMode: "environment",
-                                width: { ideal: 640 },
-                                height: { ideal: 480 },
+                                width: { exact: 250 },
+                                height: { exact: 250 },
                             },
                         });
                         const video = document.createElement("video");
@@ -44,24 +44,7 @@
                         });
 
                         const captureImage = async () => {
-                            const videoWidth = video.videoWidth;
-                            const videoHeight = video.videoHeight;
-                            const scale = Math.min(250 / videoWidth, 250 / videoHeight);
-                            const scaledWidth = videoWidth * scale;
-                            const scaledHeight = videoHeight * scale;
-                            const x = (250 - scaledWidth) / 2;
-                            const y = (250 - scaledHeight) / 2;
-
-                            const canvas = await html2canvas(video, {
-                                width: scaledWidth,
-                                height: scaledHeight,
-                                x: x,
-                                y: y,
-                            });
-                            const imageData = canvas
-                                .getContext("2d")
-                                .getImageData(0, 0, 250, 250);
-                            context.putImageData(imageData, 0, 0);
+                            context.drawImage(video, 0, 0, 250, 250);
                             stream.getTracks().forEach((track) => track.stop());
                         };
 
