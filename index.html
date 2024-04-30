@@ -61,27 +61,25 @@
                 border-color: #bd2130;
             }
 
-            /* Ocultar el botón de cargar imagen en dispositivos móviles */
-            @media (max-width: 576px) {
-                #imageInputContainer {
-                    display: none;
-                }
+            .caja {
+                width: 284.409px; /* Ancho fijo de la caja */
+                height: 163.228px; /* Alto fijo de la caja */
+                border: dashed 3px red;
+                margin: 10px;
+                cursor: pointer;
+            }
+
+            .caja img {
+                width: 100%;
+                height: 100%;
             }
         </style>
     </head>
     <body>
-        <!-- Captura y recorte de imagen -->
-        <div class="container mt-5">
-            <h2>Captura y recorte de imagen</h2>
-            <button id="captureButton" class="btn btn-primary">
-                Capturar y recortar
-            </button>
-        </div>
-
         <!-- Modal para cargar y recortar imagen -->
         <div id="myModal" class="modal">
             <div class="modal-content">
-                <span class="close">&times;</span>
+                <span class="close" onclick="cerrarModal()">&times;</span>
                 <h2 class="mb-4">Recorte de imagen</h2>
                 <div id="imageInputContainer" class="mb-3">
                     <input
@@ -101,26 +99,125 @@
                 </div>
                 <div id="editorContainer" class="mb-3"></div>
                 <canvas id="preview" class="mb-3"></canvas>
-                <code id="base64" class="mb-3"></code>
+                <code id="base64" class="mb-3" style="display: none"></code>
+            </div>
+        </div>
+
+        <!-- Contenedor para mostrar las cajas -->
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <div onclick="abrirModal('imagenCaja1')" class="caja">
+                        <img id="imagenCaja1" src="card.svg" alt="Caja 1" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div onclick="abrirModal('imagenCaja2')" class="caja">
+                        <img id="imagenCaja2" src="card.svg" alt="Caja 2" />
+                    </div>
+                </div>
             </div>
         </div>
 
         <script>
+            // Función para abrir el modal y establecer la caja seleccionada
+            var cropper;
+            var selectedBoxId; // Almacena el ID de la caja seleccionada
+
+            function openCamera() {
+                navigator.mediaDevices
+                    .getUserMedia({
+                        video: {
+                            facingMode: "environment",
+                            width: { exact: 250 },
+                            height: { exact: 250 },
+                        },
+                    })
+                    .then(function (stream) {
+                        const video = document.createElement("video");
+                        const cameraContainer =
+                            document.getElementById("editorContainer");
+                        cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
+                        cameraContainer.appendChild(video);
+                        video.srcObject = stream;
+                        video.width = 250; // Establece el ancho del video
+                        video.height = 250; // Establece el alto del video
+                        video.play();
+
+                        const canvas = document.createElement("canvas");
+                        canvas.width = 250;
+                        canvas.height = 250;
+                        const context = canvas.getContext("2d");
+
+                        const captureImage = function () {
+                            context.drawImage(video, 0, 0, 250, 250);
+                            const imageDataURL = canvas.toDataURL("image/png");
+                            if (cropper) {
+                                cropper.destroy();
+                            }
+                            initCropper(imageDataURL);
+                        };
+
+                        $("#takePhotoButton").click(captureImage);
+                    })
+                    .catch(function (error) {
+                        console.error("Error al acceder a la cámara trasera:", error);
+                    });
+            }
+
+            function initCropper(imageDataURL) {
+                $("#preview").attr("src", imageDataURL);
+                cropper = new Croppr("#preview", {
+                    aspectRatio: null, // Remove aspect ratio
+                    startSize: [70, 70],
+                    onCropEnd: function (data) {
+                        const inicioX = data.x;
+                        const inicioY = data.y;
+                        const nuevoAncho = data.width;
+                        const nuevaAltura = data.height;
+                        const zoom = 1;
+                        let imagenEn64 = "";
+                        let miCanvas = document.createElement("canvas");
+                        miCanvas.width = nuevoAncho;
+                        miCanvas.height = nuevaAltura;
+                        let contexto = miCanvas.getContext("2d");
+                        let miNuevaImagenTemp = new Image();
+                        miNuevaImagenTemp.onload = function () {
+                            contexto.drawImage(
+                                miNuevaImagenTemp,
+                                inicioX,
+                                inicioY,
+                                nuevoAncho * zoom,
+                                nuevaAltura * zoom,
+                                0,
+                                0,
+                                nuevoAncho,
+                                nuevaAltura
+                            );
+                            imagenEn64 = miCanvas.toDataURL("image/jpeg");
+                            $("#base64").text(imagenEn64);
+                        };
+                        miNuevaImagenTemp.src = imageDataURL;
+                    },
+                });
+            }
+
+            function abrirModal(boxId) {
+                selectedBoxId = boxId; // Almacena el ID de la caja seleccionada
+                $("#myModal").css("display", "block");
+                openCamera();
+                $("#bas64").hide();
+            }
+
+            // Función para cerrar el modal
+            function cerrarModal() {
+                $("#myModal").css("display", "none");
+                if (cropper) {
+                    cropper.destroy();
+                }
+            }
+
             $(document).ready(function () {
-                var cropper;
-
-                $("#captureButton").click(function () {
-                    $("#myModal").css("display", "block");
-                    openCamera();
-                });
-
-                $(".close").click(function () {
-                    $("#myModal").css("display", "none");
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                });
-
                 $("#imageInput").change(function () {
                     var file = this.files[0];
                     var reader = new FileReader();
@@ -141,87 +238,8 @@
                 $("#showImageButton").click(function () {
                     $("#myModal").css("display", "none");
                     var imageDataURL = $("#base64").text();
-                    $("#previewImage").attr("src", imageDataURL);
-                    $("#previewImage").css("display", "block");
+                    $("#" + selectedBoxId).attr("src", imageDataURL); // Guarda la imagen en la caja seleccionada
                 });
-
-                function openCamera() {
-                    navigator.mediaDevices
-                        .getUserMedia({
-                            video: {
-                                facingMode: "environment",
-                                width: { exact: 250 },
-                                height: { exact: 250 },
-                            },
-                        })
-                        .then(function (stream) {
-                            const video = document.createElement("video");
-                            const cameraContainer =
-                                document.getElementById("editorContainer");
-                            cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
-                            cameraContainer.appendChild(video);
-                            video.srcObject = stream;
-                            video.width = 250; // Establece el ancho del video
-                            video.height = 250; // Establece el alto del video
-                            video.play();
-
-                            const canvas = document.createElement("canvas");
-                            canvas.width = 250;
-                            canvas.height = 250;
-                            const context = canvas.getContext("2d");
-
-                            const captureImage = function () {
-                                context.drawImage(video, 0, 0, 250, 250);
-                                const imageDataURL = canvas.toDataURL("image/png");
-                                if (cropper) {
-                                    cropper.destroy();
-                                }
-                                initCropper(imageDataURL);
-                            };
-
-                            $("#takePhotoButton").click(captureImage);
-                        })
-                        .catch(function (error) {
-                            console.error("Error al acceder a la cámara trasera:", error);
-                        });
-                }
-
-                function initCropper(imageDataURL) {
-                    $("#preview").attr("src", imageDataURL);
-                    cropper = new Croppr("#preview", {
-                        aspectRatio: null, // Remove aspect ratio
-                        startSize: [70, 70],
-                        onCropEnd: function (data) {
-                            const inicioX = data.x;
-                            const inicioY = data.y;
-                            const nuevoAncho = data.width;
-                            const nuevaAltura = data.height;
-                            const zoom = 1;
-                            let imagenEn64 = "";
-                            let miCanvas = document.createElement("canvas");
-                            miCanvas.width = nuevoAncho;
-                            miCanvas.height = nuevaAltura;
-                            let contexto = miCanvas.getContext("2d");
-                            let miNuevaImagenTemp = new Image();
-                            miNuevaImagenTemp.onload = function () {
-                                contexto.drawImage(
-                                    miNuevaImagenTemp,
-                                    inicioX,
-                                    inicioY,
-                                    nuevoAncho * zoom,
-                                    nuevaAltura * zoom,
-                                    0,
-                                    0,
-                                    nuevoAncho,
-                                    nuevaAltura
-                                );
-                                imagenEn64 = miCanvas.toDataURL("image/jpeg");
-                                $("#base64").text(imagenEn64);
-                            };
-                            miNuevaImagenTemp.src = imageDataURL;
-                        },
-                    });
-                }
             });
         </script>
 
