@@ -12,7 +12,7 @@
             id="cameraContainer"
             style="width: 250px; height: 250px; overflow: hidden"
         ></div>
-        <canvas id="canvas" width="250" height="250"></canvas>
+        <img id="capturedImage" style="display: none; width: 250px; height: 250px" />
 
         <script>
             document
@@ -29,22 +29,25 @@
                         const video = document.createElement("video");
                         const cameraContainer =
                             document.getElementById("cameraContainer");
+                        cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
                         cameraContainer.appendChild(video);
                         video.srcObject = stream;
                         video.width = 250; // Establece el ancho del video
                         video.height = 250; // Establece el alto del video
                         await video.play();
 
-                        const canvas = document.getElementById("canvas");
-                        const context = canvas.getContext("2d");
-
-                        video.addEventListener("loadedmetadata", () => {
-                            canvas.width = 250; // Establece el ancho del canvas
-                            canvas.height = 250; // Establece el alto del canvas
-                        });
+                        const capturedImage = document.getElementById("capturedImage");
 
                         const captureImage = async () => {
+                            const canvas = document.createElement("canvas");
+                            canvas.width = 250;
+                            canvas.height = 250;
+                            const context = canvas.getContext("2d");
                             context.drawImage(video, 0, 0, 250, 250);
+                            const imageDataURL = canvas.toDataURL("image/png");
+                            capturedImage.src = imageDataURL;
+                            capturedImage.style.display = "block";
+                            video.pause();
                             stream.getTracks().forEach((track) => track.stop());
                         };
 
