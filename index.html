@@ -15,19 +15,25 @@
                 .addEventListener("click", async () => {
                     try {
                         const stream = await navigator.mediaDevices.getUserMedia({
-                            video: { facingMode: "environment" },
+                            video: {
+                                facingMode: "environment",
+                                width: { ideal: 640 },
+                                height: { ideal: 480 },
+                            },
                         });
                         const video = document.createElement("video");
                         document.body.appendChild(video);
                         video.srcObject = stream;
+                        video.width = 250; // Establece el ancho del video
+                        video.height = 250; // Establece el alto del video
                         await video.play();
 
                         const canvas = document.getElementById("canvas");
                         const context = canvas.getContext("2d");
 
                         video.addEventListener("loadedmetadata", () => {
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
+                            canvas.width = 250; // Establece el ancho del canvas
+                            canvas.height = 250; // Establece el alto del canvas
                         });
 
                         const captureImage = () => {
