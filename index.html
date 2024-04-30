@@ -87,6 +87,7 @@
                         id="imageInput"
                         accept="image/*"
                         class="form-control-file"
+                        style="display: none"
                     />
                 </div>
                 <div class="mb-3">
@@ -161,6 +162,7 @@
                         cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
                         cameraContainer.appendChild(video);
                         video.srcObject = stream;
+                        video.id = "camara_video";
                         video.width = 250; // Establece el ancho del video
                         video.height = 250; // Establece el alto del video
                         video.play();
@@ -187,6 +189,7 @@
             }
 
             function initCropper(imageDataURL) {
+                $("#camara_video").hide();
                 $("#preview").attr("src", imageDataURL);
                 cropper = new Croppr("#preview", {
                     aspectRatio: null, // Remove aspect ratio
