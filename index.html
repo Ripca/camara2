@@ -8,14 +8,8 @@
     </head>
     <body>
         <button id="captureButton">Capturar</button>
-        <div
-            id="cameraContainer"
-            style="width: 284.409px; height: 163.228px; overflow: hidden"
-        ></div>
-        <img
-            id="capturedImage"
-            style="display: none; width: 284.409px; height: 163.228px"
-        />
+        <div id="cameraContainer" style="overflow: hidden"></div>
+        <img id="capturedImage" style="display: none" />
 
         <script>
             document
@@ -35,22 +29,23 @@
                         cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
                         cameraContainer.appendChild(video);
                         video.srcObject = stream;
-                        video.width = 284.409; // Establece el ancho del video
-                        video.height = 163.228; // Establece el alto del video
                         await video.play();
 
                         const capturedImage = document.getElementById("capturedImage");
 
                         const captureImage = async () => {
                             const canvas = document.createElement("canvas");
-                            canvas.width = 284.409;
-                            canvas.height = 163.228;
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
                             const context = canvas.getContext("2d");
-                            //pendiente
-                            context.drawImage(video, 0, 0, 284.409, 163.228);
+                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
                             const imageDataURL = canvas.toDataURL("image/png");
                             capturedImage.src = imageDataURL;
                             capturedImage.style.display = "block";
+                            capturedImage.style.width =
+                                cameraContainer.clientWidth + "px";
+                            capturedImage.style.height =
+                                cameraContainer.clientHeight + "px";
                             video.pause();
                             stream.getTracks().forEach((track) => track.stop());
                         };
