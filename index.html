@@ -4,9 +4,14 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Captura de cámara trasera</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
     </head>
     <body>
         <button id="captureButton">Capturar</button>
+        <div
+            id="cameraContainer"
+            style="width: 250px; height: 250px; overflow: hidden"
+        ></div>
         <canvas id="canvas" width="250" height="250"></canvas>
 
         <script>
@@ -22,7 +27,9 @@
                             },
                         });
                         const video = document.createElement("video");
-                        document.body.appendChild(video);
+                        const cameraContainer =
+                            document.getElementById("cameraContainer");
+                        cameraContainer.appendChild(video);
                         video.srcObject = stream;
                         video.width = 250; // Establece el ancho del video
                         video.height = 250; // Establece el alto del video
@@ -36,13 +43,25 @@
                             canvas.height = 250; // Establece el alto del canvas
                         });
 
-                        const captureImage = () => {
-                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            const imageData = context.getImageData(0, 0, 250, 250); // Captura solo un rango de 250x250
-                            canvas.width = 250; // Establece el tamaño fijo de 250x250
-                            canvas.height = 250;
+                        const captureImage = async () => {
+                            const videoWidth = video.videoWidth;
+                            const videoHeight = video.videoHeight;
+                            const scale = Math.min(250 / videoWidth, 250 / videoHeight);
+                            const scaledWidth = videoWidth * scale;
+                            const scaledHeight = videoHeight * scale;
+                            const x = (250 - scaledWidth) / 2;
+                            const y = (250 - scaledHeight) / 2;
+
+                            const canvas = await html2canvas(video, {
+                                width: scaledWidth,
+                                height: scaledHeight,
+                                x: x,
+                                y: y,
+                            });
+                            const imageData = canvas
+                                .getContext("2d")
+                                .getImageData(0, 0, 250, 250);
                             context.putImageData(imageData, 0, 0);
-                            video.pause();
                             stream.getTracks().forEach((track) => track.stop());
                         };
 
