@@ -3,50 +3,194 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Captura de cámara trasera</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+        <title>Captura y recorte de imagen</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/jamesssooi/Croppr.js@2.3.0/dist/croppr.min.js"></script>
+        <link
+            href="https://cdn.jsdelivr.net/gh/jamesssooi/Croppr.js@2.3.0/dist/croppr.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0, 0, 0, 0.4);
+            }
+
+            .modal-content {
+                background-color: #fefefe;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
-        <button id="captureButton">Capturar</button>
-        <div id="cameraContainer"></div>
-        <img id="capturedImage" />
+        <!-- Captura y recorte de imagen -->
+        <h2>Captura y recorte de imagen</h2>
+        <button id="captureButton">Capturar e recortar</button>
+
+        <!-- Modal para cargar y recortar imagen -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Recorte de imagen</h2>
+                <input type="file" id="imageInput" accept="image/*" />
+                <button id="loadImageButton">Cargar imagen</button>
+                <button id="takePhotoButton">Tomar foto</button>
+                <div id="editorContainer"></div>
+                <canvas id="preview"></canvas>
+                <code id="base64"></code>
+                <button id="showImageButton">Mostrar imagen recortada</button>
+            </div>
+        </div>
 
         <script>
             $(document).ready(function () {
-                const scanner = new Instascan.Scanner({
-                    video: document.getElementById("cameraContainer"),
-                });
-                scanner.addListener("scan", function (content) {
-                    console.log("Escaneado:", content);
-                });
-                Instascan.Camera.getCameras()
-                    .then(function (cameras) {
-                        if (cameras.length > 0) {
-                            scanner.start(cameras[0]);
-                        } else {
-                            console.error("No se encontraron cámaras disponibles.");
-                        }
-                    })
-                    .catch(function (error) {
-                        console.error("Error al acceder a la cámara:", error);
-                    });
+                var cropper;
 
-                document
-                    .getElementById("captureButton")
-                    .addEventListener("click", function () {
-                        const canvas = document.createElement("canvas");
-                        canvas.width = $("#cameraContainer video").width();
-                        canvas.height = $("#cameraContainer video").height();
-                        const context = canvas.getContext("2d");
-                        context.drawImage($("#cameraContainer video")[0], 0, 0);
-                        const imageDataURL = canvas.toDataURL("image/png");
-                        const capturedImage = document.getElementById("capturedImage");
-                        capturedImage.src = imageDataURL;
-                        capturedImage.style.display = "block";
+                $("#captureButton").click(function () {
+                    $("#myModal").css("display", "block");
+                    openCamera();
+                });
+
+                $(".close").click(function () {
+                    $("#myModal").css("display", "none");
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                });
+
+                $("#loadImageButton").click(function () {
+                    $("#imageInput").click();
+                });
+
+                $("#imageInput").change(function () {
+                    var file = this.files[0];
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var imageDataURL = e.target.result;
+                        if (cropper) {
+                            cropper.destroy();
+                        }
+                        initCropper(imageDataURL);
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                $("#takePhotoButton").click(function () {
+                    openCamera();
+                });
+
+                $("#showImageButton").click(function () {
+                    $("#myModal").css("display", "none");
+                    var imageDataURL = $("#base64").text();
+                    $("#previewImage").attr("src", imageDataURL);
+                    $("#previewImage").css("display", "block");
+                });
+
+                function openCamera() {
+                    navigator.mediaDevices
+                        .getUserMedia({
+                            video: {
+                                facingMode: "environment",
+                                width: { exact: 250 },
+                                height: { exact: 250 },
+                            },
+                        })
+                        .then(function (stream) {
+                            const video = document.createElement("video");
+                            const cameraContainer =
+                                document.getElementById("editorContainer");
+                            cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
+                            cameraContainer.appendChild(video);
+                            video.srcObject = stream;
+                            video.width = 250; // Establece el ancho del video
+                            video.height = 250; // Establece el alto del video
+                            video.play();
+
+                            const canvas = document.createElement("canvas");
+                            canvas.width = 250;
+                            canvas.height = 250;
+                            const context = canvas.getContext("2d");
+
+                            const captureImage = function () {
+                                context.drawImage(video, 0, 0, 250, 250);
+                                const imageDataURL = canvas.toDataURL("image/png");
+                                if (cropper) {
+                                    cropper.destroy();
+                                }
+                                initCropper(imageDataURL);
+                            };
+
+                            $("#takePhotoButton").click(captureImage);
+                        })
+                        .catch(function (error) {
+                            console.error("Error al acceder a la cámara trasera:", error);
+                        });
+                }
+
+                function initCropper(imageDataURL) {
+                    $("#preview").attr("src", imageDataURL);
+                    cropper = new Croppr("#preview", {
+                        aspectRatio: null, // Remove aspect ratio
+                        startSize: [70, 70],
+                        onCropEnd: function (data) {
+                            const inicioX = data.x;
+                            const inicioY = data.y;
+                            const nuevoAncho = data.width;
+                            const nuevaAltura = data.height;
+                            const zoom = 1;
+                            let imagenEn64 = "";
+                            let miCanvas = document.createElement("canvas");
+                            miCanvas.width = nuevoAncho;
+                            miCanvas.height = nuevaAltura;
+                            let contexto = miCanvas.getContext("2d");
+                            let miNuevaImagenTemp = new Image();
+                            miNuevaImagenTemp.onload = function () {
+                                contexto.drawImage(
+                                    miNuevaImagenTemp,
+                                    inicioX,
+                                    inicioY,
+                                    nuevoAncho * zoom,
+                                    nuevaAltura * zoom,
+                                    0,
+                                    0,
+                                    nuevoAncho,
+                                    nuevaAltura
+                                );
+                                imagenEn64 = miCanvas.toDataURL("image/jpeg");
+                                $("#base64").text(imagenEn64);
+                            };
+                            miNuevaImagenTemp.src = imageDataURL;
+                        },
                     });
+                }
             });
         </script>
+
+        <!-- Contenedor para mostrar la imagen recortada -->
+        <img id="previewImage" style="display: none; width: 250px; height: 250px" />
     </body>
 </html>
