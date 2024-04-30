@@ -5,11 +5,29 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Captura de cámara trasera</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+        <style>
+            #cameraContainer {
+                width: 300px;
+                height: 250px;
+                overflow: hidden;
+            }
+
+            #cameraContainer video {
+                width: 100%;
+                height: 100%;
+            }
+
+            #capturedImage {
+                display: none;
+                width: 300px;
+                height: 250px;
+            }
+        </style>
     </head>
     <body>
         <button id="captureButton">Capturar</button>
-        <div id="cameraContainer" style="overflow: hidden"></div>
-        <img id="capturedImage" style="display: none" />
+        <div id="cameraContainer"></div>
+        <img id="capturedImage" />
 
         <script>
             document
@@ -19,8 +37,8 @@
                         const stream = await navigator.mediaDevices.getUserMedia({
                             video: {
                                 facingMode: "environment",
-                                width: { exact: 284.409 },
-                                height: { exact: 163.228 },
+                                width: { exact: 300 },
+                                height: { exact: 250 },
                             },
                         });
                         const video = document.createElement("video");
@@ -29,23 +47,21 @@
                         cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
                         cameraContainer.appendChild(video);
                         video.srcObject = stream;
+                        video.width = 300; // Establece el ancho del video
+                        video.height = 250; // Establece el alto del video
                         await video.play();
 
                         const capturedImage = document.getElementById("capturedImage");
 
                         const captureImage = async () => {
                             const canvas = document.createElement("canvas");
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
+                            canvas.width = 300;
+                            canvas.height = 250;
                             const context = canvas.getContext("2d");
-                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            context.drawImage(video, 0, 0, 300, 250);
                             const imageDataURL = canvas.toDataURL("image/png");
                             capturedImage.src = imageDataURL;
                             capturedImage.style.display = "block";
-                            capturedImage.style.width =
-                                cameraContainer.clientWidth + "px";
-                            capturedImage.style.height =
-                                cameraContainer.clientHeight + "px";
                             video.pause();
                             stream.getTracks().forEach((track) => track.stop());
                         };
