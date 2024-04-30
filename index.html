@@ -10,6 +10,10 @@
             href="https://cdn.jsdelivr.net/gh/jamesssooi/Croppr.js@2.3.0/dist/croppr.min.css"
             rel="stylesheet"
         />
+        <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        />
         <style>
             .modal {
                 display: none;
@@ -25,10 +29,12 @@
 
             .modal-content {
                 background-color: #fefefe;
-                margin: 15% auto;
+                margin: 5% auto;
                 padding: 20px;
                 border: 1px solid #888;
                 width: 80%;
+                max-width: 500px; /* Limitar el ancho del modal */
+                border-radius: 5px;
             }
 
             .close {
@@ -44,25 +50,58 @@
                 text-decoration: none;
                 cursor: pointer;
             }
+
+            .btn-danger {
+                background-color: #dc3545;
+                border-color: #dc3545;
+            }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+                border-color: #bd2130;
+            }
+
+            /* Ocultar el botón de cargar imagen en dispositivos móviles */
+            @media (max-width: 576px) {
+                #imageInputContainer {
+                    display: none;
+                }
+            }
         </style>
     </head>
     <body>
         <!-- Captura y recorte de imagen -->
-        <h2>Captura y recorte de imagen</h2>
-        <button id="captureButton">Capturar e recortar</button>
+        <div class="container mt-5">
+            <h2>Captura y recorte de imagen</h2>
+            <button id="captureButton" class="btn btn-primary">
+                Capturar y recortar
+            </button>
+        </div>
 
         <!-- Modal para cargar y recortar imagen -->
         <div id="myModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2>Recorte de imagen</h2>
-                <input type="file" id="imageInput" accept="image/*" />
-                <button id="loadImageButton">Cargar imagen</button>
-                <button id="takePhotoButton">Tomar foto</button>
-                <div id="editorContainer"></div>
-                <canvas id="preview"></canvas>
-                <code id="base64"></code>
-                <button id="showImageButton">Mostrar imagen recortada</button>
+                <h2 class="mb-4">Recorte de imagen</h2>
+                <div id="imageInputContainer" class="mb-3">
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        class="form-control-file"
+                    />
+                </div>
+                <div class="mb-3">
+                    <button id="takePhotoButton" class="btn btn-primary mr-2">
+                        Tomar foto
+                    </button>
+                    <button id="showImageButton" class="btn btn-danger">
+                        Guardar imagen
+                    </button>
+                </div>
+                <div id="editorContainer" class="mb-3"></div>
+                <canvas id="preview" class="mb-3"></canvas>
+                <code id="base64" class="mb-3"></code>
             </div>
         </div>
 
@@ -80,10 +119,6 @@
                     if (cropper) {
                         cropper.destroy();
                     }
-                });
-
-                $("#loadImageButton").click(function () {
-                    $("#imageInput").click();
                 });
 
                 $("#imageInput").change(function () {
@@ -191,6 +226,16 @@
         </script>
 
         <!-- Contenedor para mostrar la imagen recortada -->
-        <img id="previewImage" style="display: none; width: 250px; height: 250px" />
+        <div class="container mt-3">
+            <img
+                id="previewImage"
+                style="
+                    display: none;
+                    width: 284.409px;
+                    height: 163.228px;
+                    max-width: 100%;
+                "
+            />
+        </div>
     </body>
 </html>
