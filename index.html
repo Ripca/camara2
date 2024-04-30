@@ -5,31 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Captura de cámara trasera</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
-        <style>
-            #cameraContainer {
-                width: 300px;
-                height: 250px;
-                overflow: hidden;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                transform: rotate(90deg); /* Rotar la cámara horizontalmente */
-            }
-
-            #cameraContainer video {
-                width: auto;
-                height: 100%;
-                transform: rotate(
-                    -90deg
-                ); /* Rotar el video de nuevo a su orientación original */
-            }
-
-            #capturedImage {
-                display: none;
-                width: 300px;
-                height: 250px;
-            }
-        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/react-html5-camera-photo@1.2.2/dist/index.js"></script>
     </head>
     <body>
         <button id="captureButton">Capturar</button>
@@ -41,41 +19,10 @@
                 .getElementById("captureButton")
                 .addEventListener("click", async () => {
                     try {
-                        const stream = await navigator.mediaDevices.getUserMedia({
-                            video: {
-                                facingMode: "environment",
-                                width: { exact: 300 },
-                                height: { exact: 250 },
-                            },
-                        });
-                        const video = document.createElement("video");
-                        const cameraContainer =
-                            document.getElementById("cameraContainer");
-                        cameraContainer.innerHTML = ""; // Limpiar el contenido del contenedor
-                        cameraContainer.appendChild(video);
-                        video.srcObject = stream;
-                        video.width = 250; // Establece el ancho del video
-                        video.height = 300; // Establece el alto del video (intercambiado para mantener la orientación correcta)
-                        await video.play();
-
+                        const dataUri = await window.takePhoto();
                         const capturedImage = document.getElementById("capturedImage");
-
-                        const captureImage = async () => {
-                            const canvas = document.createElement("canvas");
-                            canvas.width = 300;
-                            canvas.height = 250;
-                            const context = canvas.getContext("2d");
-                            context.drawImage(video, 0, 0, 300, 250);
-                            const imageDataURL = canvas.toDataURL("image/png");
-                            capturedImage.src = imageDataURL;
-                            capturedImage.style.display = "block";
-                            video.pause();
-                            stream.getTracks().forEach((track) => track.stop());
-                        };
-
-                        document
-                            .getElementById("captureButton")
-                            .addEventListener("click", captureImage);
+                        capturedImage.src = dataUri;
+                        capturedImage.style.display = "block";
                     } catch (error) {
                         console.error("Error al acceder a la cámara trasera:", error);
                     }
