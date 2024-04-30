@@ -50,8 +50,9 @@
     </head>
     <body>
         <div id="modalContainer">
-            <div id="modalContent" style="display: flex; flex-direction: column">
+            <div id="modalContent">
                 <!-- La cámara se agregará aquí dinámicamente -->
+                <video id="video" style="max-width: 100%; max-height: 100%"></video>
                 <div style="margin: 30px">
                     <button id="tomar-foto-btn" onclick="tomarFoto()">Tomar Foto</button>
                 </div>
@@ -81,12 +82,9 @@
                 const modal = document.getElementById("modalContainer");
                 modal.style.display = "block";
 
-                const video = document.createElement("video");
-                video.id = "video";
-                document.getElementById("modalContent").appendChild(video);
-
                 scanner = new Instascan.Scanner({
                     video: document.getElementById("video"),
+                    mirror: false, // Deshabilitar el espejo para usar la cámara trasera
                 });
                 scanner.addListener("scan", function (content) {
                     alert("Escaneado: " + content);
@@ -94,7 +92,11 @@
                 Instascan.Camera.getCameras()
                     .then((cameras) => {
                         if (cameras.length > 0) {
-                            scanner.start(cameras[0]);
+                            // Obtener la cámara trasera si está disponible
+                            const rearCamera = cameras.find((camera) =>
+                                camera.name.toLowerCase().includes("back")
+                            );
+                            scanner.start(rearCamera || cameras[0]);
                         } else {
                             console.error("No hay cámaras disponibles.");
                         }
@@ -114,6 +116,7 @@
                 const canvas = document.createElement("canvas");
                 const ctx = canvas.getContext("2d");
 
+                const video = document.getElementById("video");
                 const caja = document.getElementById(currentBoxId);
                 const width = caja.offsetWidth;
                 const height = caja.offsetHeight;
@@ -121,7 +124,27 @@
                 canvas.width = width;
                 canvas.height = height;
 
-                ctx.drawImage(video, 0, 0, width, height);
+                // Calcular las dimensiones de la imagen a capturar
+                const aspectRatio = video.videoWidth / video.videoHeight;
+                const targetWidth = Math.min(width, video.videoWidth);
+                const targetHeight = targetWidth / aspectRatio;
+
+                // Calcular la posición de inicio en el video para recortar
+                const startX = (video.videoWidth - targetWidth) / 2;
+                const startY = (video.videoHeight - targetHeight) / 2;
+
+                // Dibujar la porción del video en el canvas
+                ctx.drawImage(
+                    video,
+                    startX,
+                    startY,
+                    targetWidth,
+                    targetHeight,
+                    0,
+                    0,
+                    width,
+                    height
+                );
                 const dataURL = canvas.toDataURL("image/jpeg");
 
                 const imagenCaja = document.getElementById(currentBoxId);
