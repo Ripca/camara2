@@ -107,13 +107,34 @@
         <div class="container mt-5">
             <div class="row">
                 <div class="col-md-6">
-                    <div onclick="abrirModal('imagenCaja1')" class="caja">
-                        <img id="imagenCaja1" src="card.svg" alt="Caja 1" />
+                    <div
+                        style="
+                            display: flex;
+                            flex-direction: column;
+                            flex-wrap: wrap;
+                            align-items: center;
+                        "
+                    >
+                        <label for="">DPI de frente</label>
+                        <div onclick="abrirModal('imagenCaja1')" class="caja" id="caja1">
+                            <img id="imagenCaja1" src="card.svg" alt="Frente" />
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div onclick="abrirModal('imagenCaja2')" class="caja">
-                        <img id="imagenCaja2" src="card.svg" alt="Caja 2" />
+                    <div
+                        style="
+                            display: flex;
+                            flex-direction: column;
+                            flex-wrap: wrap;
+                            align-items: center;
+                        "
+                    >
+                        <label for="">DPI de reverso</label>
+
+                        <div onclick="abrirModal('imagenCaja2')" class="caja">
+                            <img id="imagenCaja2" src="card.svg" alt="Reverso" />
+                        </div>
                     </div>
                 </div>
             </div>
